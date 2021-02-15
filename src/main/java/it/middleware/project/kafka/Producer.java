@@ -1,7 +1,6 @@
 package it.middleware.project.kafka;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -17,9 +16,28 @@ import java.util.concurrent.Future;
 
 public class Producer {
 
+    @SuppressWarnings("WeakerAccess")
+    static class Result {
+        public String topic;
+        public String payload;
+    }
+
     private static final boolean waitAck = true;
 
     private static final String serverAddr = "localhost:9092";
+
+    private class Topic{
+        private String topic;
+        private String payload;
+
+        public String getTopic() {
+            return topic;
+        }
+
+        public String getPayload() {
+            return payload;
+        }
+    }
 
     @SuppressWarnings("InfiniteLoopStatement")
     public static void main(String[] args) {
@@ -31,9 +49,10 @@ public class Producer {
         while (true) {
             try {
                 String line = stdin.readLine();
-                JsonObject obj = gson.fromJson(line, JsonObject.class);
-                String topic = obj.get("topic").toString().replace("\"", "");
-                String payload = obj.get("payload").toString();
+                Topic obj = gson.fromJson(line, Topic.class);
+
+                String topic = obj.getTopic();
+                String payload = obj.getPayload();
 
                 final Properties props = new Properties();
                 props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddr);
@@ -51,6 +70,12 @@ public class Producer {
                 );
 
                 final ProducerRecord<String, String> record = new ProducerRecord<>(topic, payload);
+
+                Result result = new Result();
+                result.topic = topic;
+                result.payload = record.value();
+                System.out.println(gson.toJson(result));
+
                 final Future<RecordMetadata> future = producer.send(record);
 
                 if (waitAck) {

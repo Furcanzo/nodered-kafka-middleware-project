@@ -1,1 +1,0 @@
-[{"id":"cda680e7.4c2a","type":"jar-func","z":"b8889987.c1f408","name":"kafka producer","jar":"./classes/artifacts/nodered_kafka_middleware_project_jar/nodered-kafka-middleware-project.jar","x":500,"y":240,"wires":[[]]}]
