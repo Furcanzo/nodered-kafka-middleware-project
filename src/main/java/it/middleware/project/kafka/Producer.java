@@ -7,9 +7,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -24,7 +22,7 @@ public class Producer {
 
     private static final boolean waitAck = true;
 
-    private static final String serverAddr = "localhost:9092";
+    private static String serverAddr;
 
     private class Topic{
         private String topic;
@@ -42,9 +40,19 @@ public class Producer {
     @SuppressWarnings("InfiniteLoopStatement")
     public static void main(String[] args) {
 
+        try {
+            //InputStream is = Consumer.class.getClassLoader().getResourceAsStream("address.txt");
+            BufferedReader br = new BufferedReader(new FileReader("address.txt"));
+            serverAddr = br.readLine();
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
         Gson gson = new Gson();
+        System.out.println(serverAddr);
 
         while (true) {
             try {
